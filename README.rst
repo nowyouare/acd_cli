@@ -1,7 +1,3 @@
-+-----------------------------------------------------------------------------+
-|**Please be aware that your private data may end up visible to other users.**|
-+-----------------------------------------------------------------------------+
-
 |Donate| |Gitter| |PyVersion| |Status| |License| |Build| |PyPiVersion|
 
 acd\_cli
@@ -101,6 +97,12 @@ Have a look at the `contributing guidelines <CONTRIBUTING.rst>`_.
 
 Recent Changes
 --------------
+
+0.3.3 (upcoming)
+~~~~~~~~~~~~~~~~
+
+* stat
+* Appspot OAuth proxy switch
 
 0.3.2
 ~~~~~

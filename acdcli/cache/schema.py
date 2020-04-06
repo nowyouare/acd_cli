@@ -52,14 +52,25 @@ _CREATION_SCRIPT = """
         FOREIGN KEY(child) REFERENCES nodes (id)
     );
 
+    CREATE INDEX ix_parentage_child ON parentage(child);
     CREATE INDEX ix_nodes_names ON nodes(name);
-    PRAGMA user_version = 2;
+    PRAGMA user_version = 3;
     """
 
 _GEN_DROP_TABLES_SQL = \
     'SELECT "DROP TABLE " || name || ";" FROM sqlite_master WHERE type == "table"'
 
+_migrations = []
+"""list of all schema migrations"""
 
+
+def _migration(func):
+    """scheme migration annotation; must be used in correct order"""
+    _migrations.append(func)
+    return func
+
+
+@_migration
 def _0_to_1(conn):
     conn.executescript(
         'ALTER TABLE nodes ADD updated DATETIME;'
@@ -69,6 +80,7 @@ def _0_to_1(conn):
     conn.commit()
 
 
+@_migration
 def _1_to_2(conn):
     conn.executescript(
         'DROP TABLE IF EXISTS folders;'
@@ -79,12 +91,18 @@ def _1_to_2(conn):
     conn.commit()
 
 
-_migrations = [_0_to_1, _1_to_2]
-"""list of all migrations from index -> index+1"""
+@_migration
+def _2_to_3(conn):
+    conn.executescript(
+        'CREATE INDEX IF NOT EXISTS ix_parentage_child ON parentage(child);'
+        'REINDEX;'
+        'PRAGMA user_version = 3;'
+    )
+    conn.commit()
 
 
 class SchemaMixin(object):
-    _DB_SCHEMA_VER = 2
+    _DB_SCHEMA_VER = 3
 
     def init(self):
         try:
